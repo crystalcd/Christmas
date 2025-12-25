@@ -1,80 +1,1175 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hello, Deno</title>
-  <link rel="preload" href="https://demo-styles.deno.deno.net/fonts/Moranga-Regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="preload" href="https://demo-styles.deno.deno.net/fonts/Moranga-Medium.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="preload" href="https://demo-styles.deno.deno.net/fonts/Recursive_Variable.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="https://demo-styles.deno.deno.net/styles.css">
+  <title>Merry Christmas 🎄</title>
   <style>
-    img {
-      display: inline-block;
-      vertical-align: middle;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      /* 白天配色 */
+      --bg-gradient-day: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 50%, #E0F7FA 100%);
+      --text-color-day: #2c3e50;
+      --text-shadow-day: 0 0 5px rgba(255, 255, 255, 0.8);
+      
+      /* 黑夜配色 */
+      --bg-gradient-night: linear-gradient(180deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%);
+      --text-color-night: #fff;
+      --text-shadow-night: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 40px rgba(255, 255, 255, 0.3);
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: var(--bg-gradient-day); /* 默认白天 */
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      transition: background 1s ease;
+    }
+
+    /* 黑夜模式类 */
+    body.night-mode {
+      background: var(--bg-gradient-night);
+    }
+
+    /* 雪花效果 */
+    .snowflake {
+      position: absolute;
+      top: -10px;
+      color: white;
+      font-size: 1em;
+      font-family: Arial;
+      text-shadow: 0 0 2px rgba(0,0,0,0.1);
+      animation: fall linear infinite;
+      opacity: 0.9;
+      z-index: 1;
+    }
+    
+    /* 黑夜模式下雪花更亮 */
+    body.night-mode .snowflake {
+      text-shadow: 0 0 5px white;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh) rotate(360deg);
+      }
+    }
+
+    /* 标题 */
+    h1 {
+      color: var(--text-color-day);
+      font-size: 3rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      text-shadow: var(--text-shadow-day);
+      transition: all 1s ease;
+      z-index: 10;
+    }
+    
+    /* 黑夜模式标题 */
+    body.night-mode h1 {
+      color: var(--text-color-night);
+      text-shadow: var(--text-shadow-night);
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.5),
+          0 0 40px rgba(255, 255, 255, 0.3);
+      }
+      to {
+        text-shadow: 0 0 30px rgba(255, 255, 255, 0.8),
+          0 0 60px rgba(255, 255, 255, 0.5),
+          0 0 80px rgba(255, 255, 255, 0.3);
+      }
+    }
+
+    /* 圣诞树容器 */
+    .tree-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 5;
+    }
+
+    /* Canvas样式 */
+    #treeCanvas {
+      display: block;
+      /* 移除模糊阴影，保持卡通风格的清晰边缘 */
+      filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.1));
+      transition: filter 1s ease;
+    }
+    
+    body.night-mode #treeCanvas {
+      filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.3));
+    }
+
+    /* 礼物盒 - 卡通风格 */
+    .gifts {
+      display: flex;
+      gap: 15px;
+      margin-top: 10px;
+      z-index: 5;
+    }
+
+    .gift {
+      width: 50px;
+      height: 50px;
+      position: relative;
+      border: 2px solid rgba(0,0,0,0.2);
+      border-radius: 4px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .gift:nth-child(1) {
+      background: #ff4d4d;
+      transform: rotate(-5deg);
+    }
+
+    .gift:nth-child(2) {
+      background: #4d94ff;
+      width: 60px;
+      height: 60px;
+      z-index: 2;
+    }
+
+    .gift:nth-child(3) {
+      background: #4dff4d;
+      transform: rotate(5deg);
+    }
+
+    .gift::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 8px;
+      background: #ffd700;
+      transform: translateY(-50%);
+      border-top: 1px solid rgba(255,255,255,0.3);
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .gift::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 8px;
+      height: 100%;
+      background: #ffd700;
+      transform: translateX(-50%);
+      border-left: 1px solid rgba(255,255,255,0.3);
+      border-right: 1px solid rgba(0,0,0,0.1);
+    }
+
+    /* 音乐控制按钮 */
+    .music-control {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .music-control:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    .music-control::before {
+      content: '🎵';
+      font-size: 24px;
+    }
+
+    .music-control.muted::before {
+      content: '🔇';
+    }
+    
+    /* 模式切换按钮 */
+    .mode-toggle {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      background: rgba(255, 255, 255, 0.3);
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      z-index: 100;
+      font-size: 24px;
+    }
+    
+    .mode-toggle:hover {
+      background: rgba(255, 255, 255, 0.5);
+      transform: rotate(15deg);
+    }
+    
+    body.night-mode .mode-toggle {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+      color: #fff;
+    }
+
+    /* 祝福特效 */
+    .greeting-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px 50px;
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+      text-align: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+    }
+
+    .greeting-popup.show {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .greeting-text {
+      font-size: 2.5rem;
+      color: #d63031;
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-shadow: 1px 1px 0 #fff;
+    }
+
+    .greeting-sub {
+      font-size: 1.2rem;
+      color: #2c3e50;
+    }
+
+    .close-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #d63031;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: transform 0.2s;
+    }
+
+    .close-btn:hover {
+      transform: scale(1.05);
+      background: #ff4757;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      #treeCanvas {
+        width: 90vw;
+        height: auto;
+      }
+
+      .greeting-text {
+        font-size: 1.8rem;
+      }
     }
   </style>
 </head>
 
 <body>
-    <main>
-      <section>
-        <a href="https://deno.com/deploy">
-        </a>
-      <h1>
-        <p>
-          Hello, Deno!
-        </p>
-      </h1>
-      <p>
-        This little example is being served by <a href="https://deno.com/">Deno</a>.
-        You can run it locally or in porduction on <a href="https://deno.com/deploy">Deno Deploy</a> or other hosting platforms.
-      </p>
-      <ul>
-        <li>Run it locally with<code>deno task dev</code></li>
-        <li>Deploy it to <a href="https://deno.com/deploy">Deno Deploy</a> via the CLI by running<code>deno deploy</code></li>
-        <li>Run it locally and share it publically by running <code>deno deploy --connected</code></li>
-      </ul>
-    </section>
-      <hr>
-    <section>
-      <h2>What's next?</h2>
-      <p>
-        You can clone this example and deploy it to Deno Deploy in just a few clicks
-        <a href="https://app.deno.com/new?clone=https://github.com/denoland/examples&path=hello-world"><img src="https://deno.com/button" alt="Deploy on Deno"/></a>
-      </p>
-      <ul>
-        <li>
-          <a href="https://docs.deno.com/examples">More examples in the Deno Docs</a>
-        </li>
-        <li>
-          <a href="https://deno.com/deploy">Deno Deploy Early Access</a>
-        </li>
-      </ul>
-    </section>
-    </main>
-    <hr>
-    <footer>
-      <section>
-      <ul class="flex-btwn">
-        <li>
-          <a href="https://deno.com">BlueSky</a>
-        </li>
-        <li>
-          <a href="https://deno.com">Twitter</a>
-        </li>
-        <li>
-          <a href="https://deno.com">YouTube</a>
-        </li>
-        <li>
-          <a href="https://deno.com">Newsletter</a>
-        </li>
-        <li>
-          <a href="https://deno.com">Deno</a>
-        </li>
-      </ul>
-      </section>
-    </footer>
+  <h1>Merry Christmas! 🎄</h1>
+
+  <!-- 模式切换按钮 -->
+  <div class="mode-toggle" id="modeToggle" title="切换白天/黑夜">☀️</div>
+
+  <!-- 祝福弹窗 -->
+  <div class="greeting-popup" id="greetingPopup">
+    <div class="greeting-text" id="greetingTitle">Merry Christmas! 🎁</div>
+    <div class="greeting-sub" id="greetingSub">愿你的生活充满爱与欢乐</div>
+    <button class="close-btn" onclick="closeGreeting()">谢谢圣诞老人!</button>
+  </div>
+
+  <div class="tree-container">
+    <canvas id="treeCanvas" width="600" height="700"></canvas>
+
+    <!-- 礼物盒 -->
+    <div class="gifts">
+      <div class="gift"></div>
+      <div class="gift"></div>
+      <div class="gift"></div>
+    </div>
+  </div>
+
+  <!-- 音乐控制按钮 -->
+  <div class="music-control" id="musicControl" title="点击播放/暂停音乐"></div>
+
+  <!-- 音频元素 - 使用本地音乐文件 -->
+  <audio id="christmasMusic" loop>
+    <source src="merry-christmas.mp3" type="audio/mpeg">
+    <source src="merry-christmas.ogg" type="audio/ogg">
+    <source src="merry-christmas.wav" type="audio/wav">
+  </audio>
+
+  <script>
+    const canvas = document.getElementById('treeCanvas');
+    const ctx = canvas.getContext('2d');
+    const modeToggle = document.getElementById('modeToggle');
+    const greetingPopup = document.getElementById('greetingPopup');
+    const greetingTitle = document.getElementById('greetingTitle');
+    const greetingSub = document.getElementById('greetingSub');
+    let isNightMode = false;
+    
+    // 圣诞祝福语数组
+    const greetings = [
+      { title: "Merry Christmas! 🎁", sub: "愿你的生活充满爱与欢乐" },
+      { title: "圣诞快乐! 🎄", sub: "愿平安喜乐永远伴随你" },
+      { title: "Happy Holidays! ✨", sub: "祝你度过一个温馨美好的节日" },
+      { title: "Season's Greetings! ❄️", sub: "愿这个冬天温暖如春" },
+      { title: "Joy to the World! 🌟", sub: "愿幸福与你同在" },
+      { title: "Ho Ho Ho! 🎅", sub: "圣诞老人给你送来了好运" },
+      { title: "Merry & Bright! 🕯️", sub: "愿你的前程如星光般璀璨" }
+    ];
+
+    // 获取随机祝福
+    function setRandomGreeting() {
+      const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+      greetingTitle.textContent = randomGreeting.title;
+      greetingSub.textContent = randomGreeting.sub;
+    }
+    
+    // 圣诞老人状态
+    const santa = {
+      active: false,
+      x: 0,
+      y: 0,
+      angle: 0,
+      radius: 0, // 环绕半径
+      scale: 0,
+      opacity: 0
+    };
+
+    // 粒子系统
+    class Particle {
+      constructor(x, y, type) {
+        this.x = x;
+        this.y = y;
+        this.type = type; // 'trail', 'firework', 'sparkle'
+        this.life = 1;
+        this.decay = Math.random() * 0.02 + 0.01;
+        
+        if (type === 'trail') {
+          this.vx = (Math.random() - 0.5) * 2;
+          this.vy = (Math.random() - 0.5) * 2;
+          this.color = `hsl(${45 + Math.random() * 15}, 100%, ${50 + Math.random() * 50}%)`; // 金色
+          this.size = Math.random() * 3 + 1;
+        } else if (type === 'firework') {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = Math.random() * 3 + 1;
+          this.vx = Math.cos(angle) * speed;
+          this.vy = Math.sin(angle) * speed;
+          this.color = `hsl(${Math.random() * 360}, 100%, 70%)`;
+          this.size = Math.random() * 2 + 1;
+          this.gravity = 0.05;
+        } else if (type === 'sparkle') {
+          this.vx = (Math.random() - 0.5) * 1;
+          this.vy = (Math.random() - 0.5) * 1;
+          this.color = `hsl(${Math.random() * 360}, 100%, 80%)`;
+          this.size = Math.random() * 2 + 0.5;
+          this.decay = 0.05;
+        }
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.life -= this.decay;
+        
+        if (this.type === 'firework') {
+          this.vy += this.gravity;
+        }
+      }
+
+      draw(ctx) {
+        ctx.save();
+        ctx.globalAlpha = this.life;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    const particles = [];
+
+    // 关闭祝福弹窗
+    window.closeGreeting = function() {
+      greetingPopup.classList.remove('show');
+    }
+
+    // 启动圣诞老人动画
+    function startSantaAnimation() {
+      santa.active = true;
+      santa.angle = Math.PI; // 从后面开始
+      santa.radius = 400; // 初始大半径（远）
+      santa.scale = 0.1; // 初始很小
+      santa.opacity = 0;
+      
+      // 关闭之前的弹窗
+      closeGreeting();
+    }
+    
+    // 触发烟花特效
+    function triggerFireworks() {
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 3;
+      
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          const x = centerX + (Math.random() - 0.5) * 400;
+          const y = centerY + (Math.random() - 0.5) * 200;
+          for (let j = 0; j < 50; j++) {
+            particles.push(new Particle(x, y, 'firework'));
+          }
+        }, i * 300);
+      }
+    }
+
+    // 鼠标移动产生特效
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      // 调整坐标比例
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      
+      for(let i = 0; i < 2; i++) {
+        particles.push(new Particle(x * scaleX, y * scaleY, 'sparkle'));
+      }
+    });
+
+    // 模式切换逻辑
+    modeToggle.addEventListener('click', () => {
+      isNightMode = !isNightMode;
+      document.body.classList.toggle('night-mode');
+      modeToggle.textContent = isNightMode ? '🌙' : '☀️';
+      
+      // 切换到夜晚时触发圣诞老人动画
+      if(isNightMode) {
+        startSantaAnimation();
+      }
+      
+      // 重绘以更新灯光亮度
+      drawTree();
+    });
+    
+    // 响应式调整canvas大小
+    function resizeCanvas() {
+      const maxWidth = Math.min(600, window.innerWidth - 40);
+      const maxHeight = Math.min(700, window.innerHeight - 150);
+      const scale = Math.min(maxWidth / 600, maxHeight / 700);
+      canvas.style.width = (600 * scale) + 'px';
+      canvas.style.height = (700 * scale) + 'px';
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // 灯光数据 - 固定位置，移除随机生成
+    const lights = [];
+    const decorations = [];
+
+    // 初始化装饰品和灯光
+    function initDecorations() {
+      lights.length = 0;
+      decorations.length = 0;
+      
+      const centerX = 300;
+      const layers = [
+        { y: 550, width: 380, height: 160 },
+        { y: 440, width: 320, height: 140 },
+        { y: 340, width: 260, height: 120 },
+        { y: 250, width: 200, height: 100 }
+      ];
+      
+      // 灯光颜色
+      const colors = ['#ff4d4d', '#ffff4d', '#4d94ff', '#ff4dff'];
+      
+      layers.forEach((layer, index) => {
+        // 添加灯光
+        const numLights = 6 + index;
+        for (let i = 0; i < numLights; i++) {
+          // 均匀分布在层边缘附近
+          const angle = (i / numLights) * Math.PI + Math.PI; // 下半圆
+          // 随机散布在树层表面
+          const rX = (Math.random() - 0.5) * layer.width * 0.7;
+          const rY = (Math.random() - 0.5) * layer.height * 0.6;
+          
+          lights.push({
+            x: centerX + rX,
+            y: layer.y - 40 + rY,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            phase: Math.random() * Math.PI * 2
+          });
+        }
+        
+        // 添加星星装饰
+        const numStars = 3;
+        for(let i=0; i<numStars; i++) {
+           decorations.push({
+             type: 'star',
+             x: centerX + (Math.random() - 0.5) * layer.width * 0.8,
+             y: layer.y - 20 + (Math.random() - 0.5) * layer.height * 0.5,
+             size: 10 + Math.random() * 5,
+             rotation: Math.random() * 0.5
+           });
+        }
+        
+        // 添加月亮装饰
+        if (index % 2 === 0) {
+           decorations.push({
+             type: 'moon',
+             x: centerX + (Math.random() - 0.5) * layer.width * 0.6,
+             y: layer.y - 30,
+             size: 12,
+             rotation: Math.random() * 0.5
+           });
+        }
+      });
+    }
+    
+    // 绘制圆润的卡通圣诞老人
+    function drawSantaImage(x, y, scale) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(scale, scale);
+      
+      drawSleigh();
+      drawSantaBody();
+      drawReindeer(120, 20);
+      
+      ctx.restore();
+    }
+    
+    // 绘制雪橇 - 更加圆润精致
+    function drawSleigh() {
+       // 雪橇主体 - 红色渐变
+       const sleighGradient = ctx.createLinearGradient(0, 0, 0, 50);
+       sleighGradient.addColorStop(0, '#ff6b6b');
+       sleighGradient.addColorStop(1, '#c0392b');
+       
+       ctx.fillStyle = sleighGradient;
+       ctx.beginPath();
+       ctx.moveTo(-60, 20);
+       ctx.bezierCurveTo(-60, 60, 40, 60, 60, 20); // 底部更圆润
+       ctx.lineTo(85, 20); // 前端翘起
+       ctx.bezierCurveTo(95, 20, 95, -5, 70, -5); // 扶手更夸张
+       ctx.lineTo(-40, -5);
+       ctx.quadraticCurveTo(-60, -5, -60, 20);
+       ctx.fill();
+       
+       // 金色装饰图案
+       ctx.strokeStyle = '#f1c40f';
+       ctx.lineWidth = 3;
+       ctx.lineCap = 'round';
+       ctx.beginPath();
+       ctx.moveTo(-50, 15);
+       ctx.bezierCurveTo(-20, 25, 20, 5, 50, 15);
+       ctx.stroke();
+       
+       // 雪橇滑板 - 银色金属感
+       const runnerGradient = ctx.createLinearGradient(0, 30, 0, 50);
+       runnerGradient.addColorStop(0, '#bdc3c7');
+       runnerGradient.addColorStop(1, '#7f8c8d');
+       ctx.strokeStyle = runnerGradient;
+       ctx.lineWidth = 5;
+       ctx.lineCap = 'round';
+       ctx.beginPath();
+       ctx.moveTo(-55, 50);
+       ctx.lineTo(65, 50);
+       ctx.bezierCurveTo(100, 50, 110, 20, 100, 10); // 滑板前段卷曲
+       ctx.stroke();
+       
+       // 连接杆
+       ctx.lineWidth = 3;
+       ctx.beginPath();
+       ctx.moveTo(-30, 35);
+       ctx.lineTo(-30, 50);
+       ctx.moveTo(40, 35);
+       ctx.lineTo(40, 50);
+       ctx.stroke();
+    }
+    
+    // 绘制圣诞老人身体 - Q版可爱风
+    function drawSantaBody() {
+       ctx.save();
+       ctx.translate(0, -10);
+       
+       // 身体 - 圆滚滚
+       const bodyGradient = ctx.createRadialGradient(-10, -5, 5, 0, 10, 35);
+       bodyGradient.addColorStop(0, '#ff7675');
+       bodyGradient.addColorStop(1, '#d63031');
+       ctx.fillStyle = bodyGradient;
+       ctx.beginPath();
+       ctx.ellipse(0, 10, 35, 30, 0, 0, Math.PI * 2);
+       ctx.fill();
+       
+       // 腰带
+       ctx.fillStyle = '#2d3436';
+       ctx.beginPath();
+       ctx.roundRect(-32, 10, 64, 10, 5);
+       ctx.fill();
+       
+       // 金色大扣子
+       ctx.fillStyle = '#f1c40f';
+       ctx.beginPath();
+       ctx.roundRect(-10, 8, 20, 14, 3);
+       ctx.fill();
+       ctx.fillStyle = '#2d3436'; // 扣子孔
+       ctx.beginPath();
+       ctx.roundRect(-6, 11, 12, 8, 2);
+       ctx.fill();
+       
+       // 脸部 - 粉嫩
+       ctx.fillStyle = '#ffeaa7';
+       ctx.beginPath();
+       ctx.arc(0, -15, 20, 0, Math.PI * 2);
+       ctx.fill();
+       
+       // 眼睛 - 亮闪闪
+       ctx.fillStyle = '#2d3436';
+       ctx.beginPath();
+       ctx.arc(-7, -18, 3, 0, Math.PI * 2);
+       ctx.arc(7, -18, 3, 0, Math.PI * 2);
+       ctx.fill();
+       ctx.fillStyle = '#fff'; // 高光
+       ctx.beginPath();
+       ctx.arc(-8, -19, 1, 0, Math.PI * 2);
+       ctx.arc(6, -19, 1, 0, Math.PI * 2);
+       ctx.fill();
+       
+       // 腮红 - 明显一点
+       ctx.fillStyle = 'rgba(255, 118, 117, 0.6)';
+       ctx.beginPath();
+       ctx.ellipse(-12, -12, 6, 4, 0, 0, Math.PI * 2);
+       ctx.ellipse(12, -12, 6, 4, 0, 0, Math.PI * 2);
+       ctx.fill();
+       
+       // 大胡子 - 云朵状
+       ctx.fillStyle = '#fff';
+       ctx.shadowColor = 'rgba(0,0,0,0.1)';
+       ctx.shadowBlur = 5;
+       ctx.beginPath();
+       ctx.moveTo(-20, -10);
+       // 用多个圆弧模拟蓬松感
+       ctx.bezierCurveTo(-25, 5, -15, 20, 0, 25); 
+       ctx.bezierCurveTo(15, 20, 25, 5, 20, -10);
+       ctx.quadraticCurveTo(10, -5, 0, -5);
+       ctx.quadraticCurveTo(-10, -5, -20, -10);
+       ctx.fill();
+       ctx.shadowBlur = 0; // 重置阴影
+       
+       // 帽子 - 软塌塌
+       ctx.fillStyle = '#d63031';
+       ctx.beginPath();
+       ctx.moveTo(-20, -25);
+       ctx.quadraticCurveTo(0, -55, 25, -30);
+       ctx.lineTo(20, -25);
+       ctx.fill();
+       
+       // 帽子白边 - 毛茸茸
+       ctx.fillStyle = '#fff';
+       ctx.beginPath();
+       ctx.roundRect(-22, -30, 44, 12, 6);
+       ctx.fill();
+       
+       // 帽子绒球
+       const pompomGradient = ctx.createRadialGradient(28, -28, 0, 28, -28, 8);
+       pompomGradient.addColorStop(0, '#fff');
+       pompomGradient.addColorStop(1, '#dfe6e9');
+       ctx.fillStyle = pompomGradient;
+       ctx.beginPath();
+       ctx.arc(28, -28, 8, 0, Math.PI * 2);
+       ctx.fill();
+       
+       // 礼物袋 - 鼓鼓的
+       const bagGradient = ctx.createRadialGradient(-30, 0, 5, -30, 0, 20);
+       bagGradient.addColorStop(0, '#74b9ff');
+       bagGradient.addColorStop(1, '#0984e3');
+       ctx.fillStyle = bagGradient;
+       ctx.beginPath();
+       ctx.arc(-30, 0, 18, 0, Math.PI * 2);
+       ctx.fill();
+       // 袋子口
+       ctx.fillStyle = '#dfe6e9'; 
+       ctx.beginPath();
+       ctx.ellipse(-30, -15, 8, 4, 0, 0, Math.PI * 2);
+       ctx.fill();
+       
+       ctx.restore();
+    }
+    
+    // 绘制驯鹿 - 更加可爱
+    function drawReindeer(x, y) {
+       ctx.save();
+       ctx.translate(x, y);
+       
+       // 身体
+       const furGradient = ctx.createRadialGradient(0, 0, 5, 0, 0, 25);
+       furGradient.addColorStop(0, '#e67e22');
+       furGradient.addColorStop(1, '#d35400');
+       ctx.fillStyle = furGradient;
+       ctx.beginPath();
+       ctx.ellipse(0, 5, 28, 18, 0, 0, Math.PI * 2); // 身体更圆
+       ctx.fill();
+       
+       // 尾巴 - 小圆球
+       ctx.beginPath();
+       ctx.arc(-28, 0, 5, 0, Math.PI * 2);
+       ctx.fill();
+       
+       // 头 - 大脑袋
+       ctx.beginPath();
+       ctx.ellipse(25, -15, 18, 15, 0, 0, Math.PI * 2);
+       ctx.fill();
+       
+       // 腿 - 动态感
+       ctx.lineWidth = 4;
+       ctx.strokeStyle = '#d35400';
+       ctx.lineCap = 'round';
+       const legOffset = Math.sin(Date.now() * 0.01) * 5; // 简单的摆动动画
+       
+       ctx.beginPath();
+       ctx.moveTo(-15, 15); ctx.quadraticCurveTo(-20, 25, -25 + legOffset, 35);
+       ctx.moveTo(-5, 15); ctx.quadraticCurveTo(-5, 25, -5 - legOffset, 35);
+       ctx.moveTo(15, 15); ctx.quadraticCurveTo(20, 25, 25 + legOffset, 35);
+       ctx.moveTo(25, 15); ctx.quadraticCurveTo(30, 25, 35 - legOffset, 35);
+       ctx.stroke();
+       
+       // 眼睛 - 大而有神
+       ctx.fillStyle = '#2d3436';
+       ctx.beginPath();
+       ctx.arc(28, -18, 3, 0, Math.PI * 2);
+       ctx.fill();
+       ctx.fillStyle = '#fff';
+       ctx.beginPath();
+       ctx.arc(29, -19, 1.5, 0, Math.PI * 2);
+       ctx.fill();
+       
+       // 红鼻子 - 发光
+       ctx.shadowColor = '#ff7675';
+       ctx.shadowBlur = 10;
+       ctx.fillStyle = '#e74c3c';
+       ctx.beginPath();
+       ctx.arc(38, -12, 6, 0, Math.PI * 2);
+       ctx.fill();
+       ctx.shadowBlur = 0;
+       // 鼻子高光
+       ctx.fillStyle = 'rgba(255,255,255,0.5)';
+       ctx.beginPath();
+       ctx.arc(36, -14, 2, 0, Math.PI * 2);
+       ctx.fill();
+       
+       // 鹿角 - 圆润
+       ctx.strokeStyle = '#8d6e63'; 
+       ctx.lineWidth = 3;
+       ctx.lineCap = 'round';
+       ctx.beginPath();
+       ctx.moveTo(22, -25);
+       ctx.quadraticCurveTo(25, -40, 35, -35); // 主干
+       ctx.moveTo(25, -32);
+       ctx.lineTo(20, -38); // 分叉
+       ctx.moveTo(30, -35);
+       ctx.lineTo(32, -42);
+       ctx.stroke();
+       
+       // 缰绳
+       ctx.strokeStyle = '#f1c40f';
+       ctx.lineWidth = 2;
+       ctx.beginPath();
+       ctx.moveTo(-45, 0); // 连接到雪橇
+       ctx.bezierCurveTo(-10, 10, 10, 10, 20, -5); // 脖子
+       ctx.stroke();
+       
+       ctx.restore();
+    }
+
+    // 绘制圣诞老人主函数
+    function drawSanta() {
+      if(!santa.active) return;
+      
+      const centerX = 300;
+      const centerY = 350;
+      
+      // 更新动画状态
+      santa.angle += 0.02;
+      santa.radius -= 1.5; 
+      santa.scale += 0.005; 
+      
+      if(santa.scale < 1) santa.opacity = Math.min(1, santa.opacity + 0.02);
+      
+      // 位置计算
+      santa.x = centerX + Math.cos(santa.angle) * santa.radius;
+      santa.y = centerY + Math.sin(santa.angle) * (santa.radius * 0.4) - (300 - santa.radius) * 0.5 + Math.sin(santa.angle * 5) * 20;
+      
+      // 生成拖尾粒子
+      if (Math.random() > 0.5) {
+        // 在雪橇尾部位置生成粒子
+        const tailX = santa.x - 40 * santa.scale; 
+        const tailY = santa.y;
+        particles.push(new Particle(tailX, tailY, 'trail'));
+      }
+
+      // 绘制
+      ctx.save();
+      ctx.translate(santa.x, santa.y);
+      const baseScale = 0.6 * santa.scale; // 稍微调大一点基础比例
+      ctx.scale(baseScale, baseScale);
+      
+      if(Math.sin(santa.angle) > 0) {
+         ctx.scale(-1, 1);
+      }
+      
+      ctx.globalAlpha = santa.opacity;
+      drawSantaImage(0, 0, 1);
+      ctx.restore();
+      
+      // 动画结束条件
+      if(santa.radius < 50 && santa.scale > 1.2) {
+        santa.active = false;
+        // 随机设置祝福语
+        setRandomGreeting();
+        setTimeout(() => {
+          greetingPopup.classList.add('show');
+          triggerFireworks(); // 触发烟花
+        }, 500);
+      }
+    }
+
+    // 绘制卡通圣诞树
+    function drawTree() {
+      const centerX = 300;
+      const baseY = 600;
+      
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      drawTrunk(centerX, baseY);
+      drawLayer(centerX, 550, 400, 180, '#228B22');
+      drawLayer(centerX, 440, 340, 160, '#2E8B57');
+      drawLayer(centerX, 340, 280, 140, '#32CD32');
+      drawLayer(centerX, 250, 220, 120, '#3CB371');
+      
+      drawFace(centerX, 380);
+      drawDecorations();
+      drawTopStar(centerX, 160);
+      drawLights();
+      
+      // 更新并绘制粒子 (拖尾和烟花)
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.update();
+        p.draw(ctx);
+        if (p.life <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+
+      drawSanta();
+    }
+
+    // 绘制树干 (保持不变)
+    function drawTrunk(x, y) {
+      ctx.fillStyle = '#8B4513';
+      ctx.beginPath();
+      ctx.roundRect(x - 30, y - 60, 60, 80, 5);
+      ctx.fill();
+      ctx.strokeStyle = '#654321';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(x - 10, y - 50);
+      ctx.lineTo(x - 10, y - 10);
+      ctx.moveTo(x + 10, y - 40);
+      ctx.lineTo(x + 10, y - 15);
+      ctx.stroke();
+    }
+
+    // 绘制单层树叶 (保持不变)
+    function drawLayer(x, y, width, height, color) {
+      ctx.fillStyle = color;
+      ctx.shadowColor = 'rgba(0,0,0,0.2)';
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetY = 5;
+      ctx.beginPath();
+      const left = x - width/2;
+      const right = x + width/2;
+      const top = y - height;
+      const bottom = y;
+      ctx.moveTo(x, top);
+      ctx.bezierCurveTo(left + width*0.1, top + height*0.5, left - width*0.1, bottom - height*0.3, left, bottom);
+      const waveCount = 5;
+      const waveWidth = width / waveCount;
+      for(let i=0; i<waveCount; i++) {
+        const startX = left + i * waveWidth;
+        const endX = left + (i + 1) * waveWidth;
+        const cp1x = startX + waveWidth * 0.25;
+        const cp1y = bottom + 20;
+        const cp2x = startX + waveWidth * 0.75;
+        const cp2y = bottom + 20;
+        ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, endX, bottom);
+      }
+      ctx.bezierCurveTo(right + width*0.1, bottom - height*0.3, right - width*0.1, top + height*0.5, x, top);
+      ctx.fill();
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.fillStyle = 'rgba(255,255,255,0.15)';
+      ctx.beginPath();
+      ctx.ellipse(x - width*0.2, y - height*0.5, width*0.15, height*0.2, -0.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 绘制可爱的脸 (保持不变)
+    function drawFace(x, y) {
+      function drawEye(eyeX, eyeY) {
+        ctx.fillStyle = '#000';
+        ctx.beginPath();
+        ctx.arc(eyeX, eyeY, 12, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(eyeX - 4, eyeY - 4, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(eyeX + 3, eyeY + 3, 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      drawEye(x - 40, y);
+      drawEye(x + 40, y);
+      ctx.fillStyle = 'rgba(255, 100, 100, 0.4)';
+      ctx.beginPath();
+      ctx.ellipse(x - 55, y + 15, 12, 8, 0, 0, Math.PI * 2);
+      ctx.ellipse(x + 55, y + 15, 12, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.arc(x, y + 5, 8, 0.2, Math.PI - 0.2);
+      ctx.stroke();
+    }
+
+    // 绘制顶部大星星 (保持不变)
+    function drawTopStar(x, y) {
+      const size = 35;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.fillStyle = '#FFD700'; 
+      ctx.strokeStyle = '#FFA500'; 
+      ctx.lineWidth = 4;
+      ctx.lineJoin = 'round'; 
+      ctx.beginPath();
+      const spikes = 5;
+      const outerRadius = size;
+      const innerRadius = size * 0.5;
+      for (let i = 0; i < spikes * 2; i++) {
+        const radius = i % 2 === 0 ? outerRadius : innerRadius;
+        const angle = (i * Math.PI) / spikes - Math.PI / 2;
+        const cx = Math.cos(angle) * radius;
+        const cy = Math.sin(angle) * radius;
+        if (i === 0) ctx.moveTo(cx, cy);
+        else ctx.lineTo(cx, cy);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#000';
+      ctx.beginPath();
+      ctx.arc(-8, -2, 3, 0, Math.PI * 2);
+      ctx.arc(8, -2, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, 3, 5, 0.2, Math.PI - 0.2);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(255, 100, 100, 0.5)';
+      ctx.beginPath();
+      ctx.arc(-12, 5, 4, 0, Math.PI * 2);
+      ctx.arc(12, 5, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+    
+    // 绘制装饰品 (保持不变)
+    function drawDecorations() {
+       decorations.forEach(deco => {
+          ctx.save();
+          ctx.translate(deco.x, deco.y);
+          ctx.rotate(deco.rotation);
+          if(deco.type === 'star') {
+             ctx.fillStyle = '#FFFF00';
+             ctx.beginPath();
+             const r = deco.size;
+             for(let i=0; i<10; i++) {
+                const angle = i * Math.PI / 5;
+                const len = i%2===0 ? r : r/2;
+                ctx.lineTo(Math.cos(angle)*len, Math.sin(angle)*len);
+             }
+             ctx.closePath();
+             ctx.fill();
+             ctx.strokeStyle = '#eee';
+             ctx.lineWidth = 1;
+             ctx.beginPath();
+             ctx.moveTo(0, -deco.size);
+             ctx.lineTo(0, -deco.size - 5);
+             ctx.stroke();
+          } else if (deco.type === 'moon') {
+             ctx.fillStyle = '#9932CC'; 
+             ctx.beginPath();
+             ctx.arc(0, 0, deco.size, 0.8, 4.8);
+             ctx.bezierCurveTo(-deco.size, -deco.size/2, -deco.size, deco.size/2, Math.cos(4.8)*deco.size, Math.sin(4.8)*deco.size);
+             ctx.fill();
+          }
+          ctx.restore();
+       });
+    }
+
+    // 绘制灯光 (保持不变)
+    function drawLights() {
+      const time = Date.now() * 0.003;
+      lights.forEach(light => {
+        const maxBrightness = isNightMode ? 1.0 : 0.7;
+        const brightness = 0.5 + Math.sin(time + light.phase) * 0.5 * maxBrightness;
+        ctx.save();
+        ctx.translate(light.x, light.y);
+        const glowSize = (8 + brightness * 5) * (isNightMode ? 1.0 : 0.6);
+        const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, glowSize);
+        gradient.addColorStop(0, light.color);
+        gradient.addColorStop(1, 'transparent');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(0, 0, glowSize, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.globalAlpha = 0.8;
+        ctx.beginPath();
+        ctx.arc(0, 0, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+    }
+
+    // 初始化场景
+    initDecorations();
+    
+    // 动画循环
+    function animate() {
+      drawTree();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // 创建雪花 - 增加随机大小和透明度
+    function createSnowflake() {
+      const snowflake = document.createElement('div');
+      snowflake.className = 'snowflake';
+      snowflake.innerHTML = '❄';
+      snowflake.style.left = Math.random() * 100 + '%';
+      const duration = Math.random() * 3 + 2;
+      snowflake.style.animationDuration = duration + 's';
+      snowflake.style.opacity = Math.random() * 0.5 + 0.3;
+      snowflake.style.fontSize = (Math.random() * 10 + 10) + 'px'; // 随机大小
+      snowflake.style.filter = `blur(${Math.random()}px)`; // 随机模糊
+      document.body.appendChild(snowflake);
+
+      setTimeout(() => {
+        snowflake.remove();
+      }, duration * 1000);
+    }
+
+    // 定期创建雪花
+    setInterval(createSnowflake, 200);
+
+    // 音乐控制
+    const musicControl = document.getElementById('musicControl');
+    const audio = document.getElementById('christmasMusic');
+    let isPlaying = false;
+
+    // 尝试使用本地音乐
+    audio.addEventListener('error', () => {
+      console.log('无法加载音频文件');
+      musicControl.style.opacity = '0.5';
+      musicControl.title = '音乐文件加载失败，请确保项目目录中有 merry-christmas.mp3 文件';
+    });
+
+    // 音频加载成功
+    audio.addEventListener('loadeddata', () => {
+      musicControl.style.opacity = '1';
+      musicControl.title = '点击播放/暂停音乐';
+    });
+
+    musicControl.addEventListener('click', () => {
+      if (isPlaying) {
+        audio.pause();
+        musicControl.classList.add('muted');
+        isPlaying = false;
+      } else {
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              musicControl.classList.remove('muted');
+              isPlaying = true;
+            })
+            .catch(err => {
+              console.log('播放失败:', err);
+              alert('无法播放音乐，请检查音频文件是否存在');
+            });
+        }
+      }
+    });
+
+    // 添加一些初始雪花
+    for (let i = 0; i < 20; i++) {
+      setTimeout(() => createSnowflake(), i * 100);
+    }
+  </script>
 </body>
+
 </html>
