@@ -345,6 +345,11 @@
     <source src="merry-christmas.wav" type="audio/wav">
   </audio>
 
+  <!-- 圣诞老人音效 -->
+  <audio id="santaSound">
+    <source src="santa.mp3" type="audio/mpeg">
+  </audio>
+
   <script>
     const canvas = document.getElementById('treeCanvas');
     const ctx = canvas.getContext('2d');
@@ -354,6 +359,55 @@
     const greetingSub = document.getElementById('greetingSub');
     let isNightMode = false;
     
+    // 离屏 Canvas 用于静态缓存
+    const staticTreeCanvas = document.createElement('canvas');
+    const staticCtx = staticTreeCanvas.getContext('2d');
+    let isStaticTreeRendered = false;
+
+    // 音频上下文
+    let audioCtx = null;
+    let santaSoundInterval = null;
+
+    // 初始化 Web Audio API
+    function initAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    // 播放雪橇铃声 (使用 Web Audio API 合成)
+    function playSleighBells() {
+      if (!audioCtx) initAudioContext();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      function playSingleBell(time) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        // 铃声频率
+        const freq = 2000 + Math.random() * 2000;
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, time);
+        
+        // 音量包络
+        gain.gain.setValueAtTime(0, time);
+        gain.gain.linearRampToValueAtTime(0.05, time + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.3);
+        
+        osc.start(time);
+        osc.stop(time + 0.3);
+      }
+
+      // 播放一串铃声
+      const now = audioCtx.currentTime;
+      for(let i=0; i<5; i++) {
+        playSingleBell(now + Math.random() * 0.2);
+      }
+    }
+
     // 圣诞祝福语数组
     const greetings = [
       { title: "Merry Christmas! 🎁", sub: "愿你的生活充满爱与欢乐" },
@@ -452,6 +506,18 @@
       
       // 关闭之前的弹窗
       closeGreeting();
+
+      // 播放音效
+      const santaAudio = document.getElementById('santaSound');
+      if (santaAudio) {
+        santaAudio.currentTime = 0;
+        santaAudio.play().catch(() => {});
+      }
+      
+      // 启动铃声循环
+      if (santaSoundInterval) clearInterval(santaSoundInterval);
+      playSleighBells(); // 立即播放一次
+      santaSoundInterval = setInterval(playSleighBells, 800);
     }
     
     // 触发烟花特效
@@ -480,7 +546,10 @@
       const scaleX = canvas.width / rect.width;
       const scaleY = canvas.height / rect.height;
       
-      for(let i = 0; i < 2; i++) {
+      // 减少移动端粒子数量
+      const particleCount = window.innerWidth < 768 ? 1 : 2;
+      
+      for(let i = 0; i < particleCount; i++) {
         particles.push(new Particle(x * scaleX, y * scaleY, 'sparkle'));
       }
     });
@@ -496,10 +565,40 @@
         startSantaAnimation();
       }
       
-      // 重绘以更新灯光亮度
-      drawTree();
+      // 重绘以更新灯光亮度 (动态绘制会处理，无需手动调用)
     });
     
+    // 渲染静态树木部分到离屏 Canvas
+    function renderStaticTree() {
+       staticTreeCanvas.width = canvas.width;
+       staticTreeCanvas.height = canvas.height;
+       
+       // 如果是移动端，可以降低离屏渲染的分辨率来提高性能
+       // 但为了清晰度，我们保持尺寸，但在绘制函数中减少阴影
+       
+       const centerX = 300;
+       const baseY = 600;
+       
+       // 清除
+       staticCtx.clearRect(0, 0, staticTreeCanvas.width, staticTreeCanvas.height);
+       
+       // 绘制树干
+       drawTrunk(staticCtx, centerX, baseY);
+       
+       // 绘制树叶
+       drawLayer(staticCtx, centerX, 550, 400, 180, '#228B22');
+       drawLayer(staticCtx, centerX, 440, 340, 160, '#2E8B57');
+       drawLayer(staticCtx, centerX, 340, 280, 140, '#32CD32');
+       drawLayer(staticCtx, centerX, 250, 220, 120, '#3CB371');
+       
+       // 绘制脸和装饰
+       drawFace(staticCtx, centerX, 380);
+       drawDecorations(staticCtx);
+       drawTopStar(staticCtx, centerX, 160);
+       
+       isStaticTreeRendered = true;
+    }
+
     // 响应式调整canvas大小
     function resizeCanvas() {
       const maxWidth = Math.min(600, window.innerWidth - 40);
@@ -507,10 +606,13 @@
       const scale = Math.min(maxWidth / 600, maxHeight / 700);
       canvas.style.width = (600 * scale) + 'px';
       canvas.style.height = (700 * scale) + 'px';
+      
+      // 只有在尺寸实际改变时才重绘静态树，这里每次resize都重绘
+      renderStaticTree();
     }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
+    // 初始化调用一次
+    // resizeCanvas 在 body onload 或后面调用，这里稍后调用
+    
     // 灯光数据 - 固定位置，移除随机生成
     const lights = [];
     const decorations = [];
@@ -832,7 +934,13 @@
 
     // 绘制圣诞老人主函数
     function drawSanta() {
-      if(!santa.active) return;
+      if(!santa.active) {
+        if (santaSoundInterval) {
+          clearInterval(santaSoundInterval);
+          santaSoundInterval = null;
+        }
+        return;
+      }
       
       const centerX = 300;
       const centerY = 350;
@@ -873,6 +981,10 @@
       // 动画结束条件
       if(santa.radius < 50 && santa.scale > 1.2) {
         santa.active = false;
+        if (santaSoundInterval) {
+          clearInterval(santaSoundInterval);
+          santaSoundInterval = null;
+        }
         // 随机设置祝福语
         setRandomGreeting();
         setTimeout(() => {
@@ -889,15 +1001,13 @@
       
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      drawTrunk(centerX, baseY);
-      drawLayer(centerX, 550, 400, 180, '#228B22');
-      drawLayer(centerX, 440, 340, 160, '#2E8B57');
-      drawLayer(centerX, 340, 280, 140, '#32CD32');
-      drawLayer(centerX, 250, 220, 120, '#3CB371');
+      // 使用离屏 Canvas 缓存静态部分
+      if (!isStaticTreeRendered) {
+        renderStaticTree();
+      }
+      ctx.drawImage(staticTreeCanvas, 0, 0);
       
-      drawFace(centerX, 380);
-      drawDecorations();
-      drawTopStar(centerX, 160);
+      // 动态部分：灯光、粒子、圣诞老人
       drawLights();
       
       // 更新并绘制粒子 (拖尾和烟花)
@@ -913,8 +1023,8 @@
       drawSanta();
     }
 
-    // 绘制树干 (保持不变)
-    function drawTrunk(x, y) {
+    // 绘制树干 (接收 context 参数)
+    function drawTrunk(ctx, x, y) {
       ctx.fillStyle = '#8B4513';
       ctx.beginPath();
       ctx.roundRect(x - 30, y - 60, 60, 80, 5);
@@ -929,12 +1039,17 @@
       ctx.stroke();
     }
 
-    // 绘制单层树叶 (保持不变)
-    function drawLayer(x, y, width, height, color) {
+    // 绘制单层树叶 (接收 context 参数)
+    function drawLayer(ctx, x, y, width, height, color) {
       ctx.fillStyle = color;
-      ctx.shadowColor = 'rgba(0,0,0,0.2)';
-      ctx.shadowBlur = 10;
-      ctx.shadowOffsetY = 5;
+      
+      // 移动端优化：减少或移除阴影
+      if(window.innerWidth > 768) {
+        ctx.shadowColor = 'rgba(0,0,0,0.2)';
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetY = 5;
+      }
+      
       ctx.beginPath();
       const left = x - width/2;
       const right = x + width/2;
@@ -964,8 +1079,8 @@
       ctx.fill();
     }
 
-    // 绘制可爱的脸 (保持不变)
-    function drawFace(x, y) {
+    // 绘制可爱的脸 (接收 context 参数)
+    function drawFace(ctx, x, y) {
       function drawEye(eyeX, eyeY) {
         ctx.fillStyle = '#000';
         ctx.beginPath();
@@ -994,8 +1109,8 @@
       ctx.stroke();
     }
 
-    // 绘制顶部大星星 (保持不变)
-    function drawTopStar(x, y) {
+    // 绘制顶部大星星 (接收 context 参数)
+    function drawTopStar(ctx, x, y) {
       const size = 35;
       ctx.save();
       ctx.translate(x, y);
@@ -1036,8 +1151,8 @@
       ctx.restore();
     }
     
-    // 绘制装饰品 (保持不变)
-    function drawDecorations() {
+    // 绘制装饰品 (接收 context 参数)
+    function drawDecorations(ctx) {
        decorations.forEach(deco => {
           ctx.save();
           ctx.translate(deco.x, deco.y);
@@ -1070,7 +1185,7 @@
        });
     }
 
-    // 绘制灯光 (保持不变)
+    // 绘制灯光 (保持不变，仍然是动态的)
     function drawLights() {
       const time = Date.now() * 0.003;
       lights.forEach(light => {
@@ -1097,6 +1212,7 @@
 
     // 初始化场景
     initDecorations();
+    resizeCanvas(); // 初始化时也调用一次
     
     // 动画循环
     function animate() {
