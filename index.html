@@ -1131,6 +1131,31 @@
     const audio = document.getElementById('christmasMusic');
     let isPlaying = false;
 
+    // 尝试播放音乐
+    function tryPlayMusic() {
+      if (isPlaying) return;
+      
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            musicControl.classList.remove('muted');
+            isPlaying = true;
+          })
+          .catch(err => {
+            console.log('自动播放失败，等待交互:', err);
+            // 如果自动播放失败，添加全局点击事件来触发播放
+            document.body.addEventListener('click', function playOnInteraction() {
+              audio.play().then(() => {
+                musicControl.classList.remove('muted');
+                isPlaying = true;
+                document.body.removeEventListener('click', playOnInteraction);
+              });
+            }, { once: true });
+          });
+      }
+    }
+
     // 尝试使用本地音乐
     audio.addEventListener('error', () => {
       console.log('无法加载音频文件');
@@ -1138,13 +1163,15 @@
       musicControl.title = '音乐文件加载失败，请确保项目目录中有 merry-christmas.mp3 文件';
     });
 
-    // 音频加载成功
+    // 音频加载成功后尝试播放
     audio.addEventListener('loadeddata', () => {
       musicControl.style.opacity = '1';
       musicControl.title = '点击播放/暂停音乐';
+      tryPlayMusic(); // 尝试自动播放
     });
 
-    musicControl.addEventListener('click', () => {
+    musicControl.addEventListener('click', (e) => {
+      e.stopPropagation(); // 防止触发全局点击事件
       if (isPlaying) {
         audio.pause();
         musicControl.classList.add('muted');
